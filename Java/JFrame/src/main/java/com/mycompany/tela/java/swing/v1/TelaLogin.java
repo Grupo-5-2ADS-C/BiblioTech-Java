@@ -179,16 +179,11 @@ public class TelaLogin extends javax.swing.JFrame {
         String getLogin = iptLogin.getText();
         String getSenha = iptPassword.getText();
         
-        List<Maquina> searchLogin = con.query("select login from "
-                + "dbo.maquina",
-                new BeanPropertyRowMapper());
-        
-        List<Maquina> searchPasswd = con.query("select senha from "
-                + "dbo.maquina",
-                new BeanPropertyRowMapper());
+        List<Maquina> searchLogin = con.query("select login, senha from "
+                + "maquina where login = ? and senha = ?",
+                new MaquinaRowMapper(), getLogin, getSenha);
 
-        if (getLogin.equals(searchLogin.toString()) && 
-                getSenha.equals(searchPasswd.toString())) {
+        if (searchLogin.size() > 0) {
             SucessoLogin success = new SucessoLogin();
             success.setVisible(true);
         } else {
