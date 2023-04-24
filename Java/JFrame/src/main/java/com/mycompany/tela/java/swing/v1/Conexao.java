@@ -17,7 +17,7 @@ public class Conexao {
         
         dataSource.setDriverClassName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
         
-        dataSource.setUrl("jdbc:sqlserver://svr-bibliotech.database.windows.net:1433;databaName=bibliotech");
+        dataSource.setUrl("jdbc:sqlserver://svr-bibliotech.database.windows.net:1433;database=bibliotech;user=admin-bibliotech@svr-bibliotech;password={#Gfgrupo5};encrypt=true;trustServerCertificate=false;hostNameInCertificate=*.database.windows.net;loginTimeout=30;");
         
         dataSource.setUsername("admin-bibliotech");
         

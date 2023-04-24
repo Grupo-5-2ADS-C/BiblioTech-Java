@@ -179,12 +179,12 @@ public class TelaLogin extends javax.swing.JFrame {
         String getLogin = iptLogin.getText();
         String getSenha = iptPassword.getText();
         
-        List<ValidacaoLogin> searchLogin = con.query("select login from "
-                + "[dbo].[maquina];",
+        List<Maquina> searchLogin = con.query("select login from "
+                + "dbo.maquina",
                 new BeanPropertyRowMapper());
         
-        List<ValidacaoLogin> searchPasswd = con.query("select senha from "
-                + "[dbo].[maquina];",
+        List<Maquina> searchPasswd = con.query("select senha from "
+                + "dbo.maquina",
                 new BeanPropertyRowMapper());
 
         if (getLogin.equals(searchLogin.toString()) && 
