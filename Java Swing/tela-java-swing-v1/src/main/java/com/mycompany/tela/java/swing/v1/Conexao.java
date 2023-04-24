@@ -15,9 +15,9 @@ public class Conexao {
         
         BasicDataSource dataSource = new BasicDataSource();
         
-        dataSource.setDriverClassName("com.mysql.jdbc.Driver");
+        dataSource.setDriverClassName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
         
-        dataSource.setUrl("jdbc:mysql://localhost:3306/bibliotech");
+        dataSource.setUrl("jdbc:sqlserver://svr-bibliotech.database.windows.net:1433;databaName=bibliotech");
         
         dataSource.setUsername("admin-bibliotech");
         
