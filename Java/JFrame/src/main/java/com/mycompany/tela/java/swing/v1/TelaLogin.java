@@ -1,7 +1,7 @@
 package com.mycompany.tela.java.swing.v1;
 
+import com.github.britooo.looca.api.core.Looca;
 import java.io.IOException;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import java.util.List;
 import java.util.logging.Level;
@@ -175,13 +175,14 @@ public class TelaLogin extends javax.swing.JFrame {
     }//GEN-LAST:event_iptPasswordActionPerformed
 
     private void buttonLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonLoginActionPerformed
-        RunApp capturardados = new RunApp();
+        RunApp capturarDados = new RunApp();
+        
+        Looca looca = new Looca();
 
         Conexao conexao = new Conexao();
         JdbcTemplate con = conexao.getConnection();
         
         Boolean validar = true;
-
 
         String getLogin = iptLogin.getText();
         String getSenha = iptPassword.getText();
@@ -199,9 +200,14 @@ public class TelaLogin extends javax.swing.JFrame {
                         
     do{
         
-        capturardados.enviarDados();
+        capturarDados.enviarDados();
         
-        if(capturardados.processador.getUso() >= 1){
+        var memoriaTotal = looca.getMemoria().getTotal();
+        
+        conexao.query(String.format("insert into especificacaoComponente values"
+                + "(null, null, null, '123', %s, 2133)", memoriaTotal));
+        
+        if(capturarDados.processador.getUso() >= 1){
             ProcessBuilder Alerta = new ProcessBuilder("/bin/bash", "-c", "notify-send ALERTA 'Tela está sendo bloqueada por inatividade'");
             ProcessBuilder bloquearTela = new ProcessBuilder("/bin/bash", "-c", "xdg-screensaver lock");
 
@@ -225,7 +231,7 @@ public class TelaLogin extends javax.swing.JFrame {
         }
         
         }while(validar == true);
-       
+        
         } else {
             FalhaLogin fail = new FalhaLogin();
             fail.setVisible(true);
