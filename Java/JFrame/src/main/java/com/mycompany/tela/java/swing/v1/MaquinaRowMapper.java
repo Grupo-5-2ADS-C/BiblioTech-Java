@@ -12,10 +12,10 @@ import org.springframework.jdbc.core.RowMapper;
  *
  * @author viniciuspereira
  */
-public class MaquinaRowMapper implements RowMapper<Maquina> {
+public class MaquinaRowMapper implements RowMapper<Hardware> {
         @Override
-        public Maquina mapRow(ResultSet rs, int rowSum) throws SQLException {
-        Maquina maquina = new Maquina();
+        public Hardware mapRow(ResultSet rs, int rowSum) throws SQLException {
+        Hardware maquina = new Hardware();
         maquina.setLogin(rs.getString("login"));
         maquina.setSenha(rs.getString("senha"));
         return maquina;

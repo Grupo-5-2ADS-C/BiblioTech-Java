@@ -1,8 +1,11 @@
 package com.mycompany.tela.java.swing.v1;
 
+import java.io.IOException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -172,23 +175,61 @@ public class TelaLogin extends javax.swing.JFrame {
     }//GEN-LAST:event_iptPasswordActionPerformed
 
     private void buttonLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonLoginActionPerformed
+        RunApp capturardados = new RunApp();
 
         Conexao conexao = new Conexao();
         JdbcTemplate con = conexao.getConnection();
+        
+        Boolean validar = true;
+
 
         String getLogin = iptLogin.getText();
         String getSenha = iptPassword.getText();
         
-        List<Maquina> searchLogin = con.query("select login, senha from "
+        List<Hardware> searchLogin = con.query("select login, senha from "
                 + "maquina where login = ? and senha = ?",
                 new MaquinaRowMapper(), getLogin, getSenha);
 
         if (searchLogin.size() > 0) {
             SucessoLogin success = new SucessoLogin();
             success.setVisible(true);
+            dispose();
+            
+                        
+                        
+    do{
+        
+        capturardados.enviarDados();
+        
+        if(capturardados.processador.getUso() >= 1){
+            ProcessBuilder Alerta = new ProcessBuilder("/bin/bash", "-c", "notify-send ALERTA 'Tela está sendo bloqueada por inatividade'");
+            ProcessBuilder bloquearTela = new ProcessBuilder("/bin/bash", "-c", "xdg-screensaver lock");
+
+            try {
+                Process alerta = Alerta.start();
+            } catch (IOException ex) {
+                Logger.getLogger(TelaLogin.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+            try {
+                Thread.sleep(2000);
+                validar = false;
+                Process bloquear = bloquearTela.start();
+            } catch (InterruptedException ex) {
+                Logger.getLogger(TelaLogin.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                Logger.getLogger(TelaLogin.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+            
+        }
+        
+        }while(validar == true);
+       
         } else {
             FalhaLogin fail = new FalhaLogin();
             fail.setVisible(true);
+    
         }
     }//GEN-LAST:event_buttonLoginActionPerformed
 
@@ -196,6 +237,9 @@ public class TelaLogin extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
+
+
+
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -225,6 +269,8 @@ public class TelaLogin extends javax.swing.JFrame {
                 new TelaLogin().setVisible(true);
             }
         });
+        
+    
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
