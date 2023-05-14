@@ -28,7 +28,7 @@ public class Hardware {
     }
 
     public String getLogin() {
-        return login;
+        return this.login;
     }
 
     public void setUsoCPU(Double uso) {

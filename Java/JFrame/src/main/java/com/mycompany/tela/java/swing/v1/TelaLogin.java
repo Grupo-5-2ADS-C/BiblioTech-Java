@@ -2,10 +2,13 @@ package com.mycompany.tela.java.swing.v1;
 
 import com.github.britooo.looca.api.core.Looca;
 import java.io.IOException;
+import com.github.britooo.looca.api.group.memoria.Memoria;
 import org.springframework.jdbc.core.JdbcTemplate;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.Timer;
+
 
 /**
  *
@@ -177,8 +180,11 @@ public class TelaLogin extends javax.swing.JFrame {
     private void buttonLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonLoginActionPerformed
         RunApp capturarDados = new RunApp();
         
+        int intervalo = 5000; // Intervalo em milissegundos (5 segundos)
+        
         Looca looca = new Looca();
 
+        Memoria memoria = new Memoria();
         Conexao conexao = new Conexao();
         JdbcTemplate con = conexao.getConnection();
         
@@ -187,27 +193,30 @@ public class TelaLogin extends javax.swing.JFrame {
         String getLogin = iptLogin.getText();
         String getSenha = iptPassword.getText();
         
-        List<Hardware> searchLogin = con.query("select login, senha from "
-                + "maquina where login = ? and senha = ?",
-                new MaquinaRowMapper(), getLogin, getSenha);
+        
+        List<Hardware> searchLogin = con.query("select login,senha from maquina where login = ? and senha = ?", new HardwareRowMapper(),getLogin,getSenha);
 
         if (searchLogin.size() > 0) {
             SucessoLogin success = new SucessoLogin();
             success.setVisible(true);
             dispose();
             
-                        
-                        
+            
     do{
         
         capturarDados.enviarDados();
         
-        var memoriaTotal = looca.getMemoria().getTotal();
         
-        conexao.query(String.format("insert into especificacaoComponente values"
-                + "(null, null, null, '123', %s, 2133)", memoriaTotal));
+        con.update(String.format("INSERT INTO metrica (uso, frequencia, fk_especificacao, fk_componente_maquina, fk_maquina, total_processos) VALUES (%s, null, 4, 1, 2, %s)",
+                memoria.getEmUso(), looca.getGrupoDeProcessos().getTotalProcessos()));
         
-        if(capturarDados.processador.getUso() >= 1){
+        try{
+            Thread.sleep(5000);
+        }catch(InterruptedException e){
+             e.printStackTrace();
+        }
+        
+        if(capturarDados.processador.getUso() >= 60.0){
             ProcessBuilder Alerta = new ProcessBuilder("/bin/bash", "-c", "notify-send ALERTA 'Tela está sendo bloqueada por inatividade'");
             ProcessBuilder bloquearTela = new ProcessBuilder("/bin/bash", "-c", "xdg-screensaver lock");
 
