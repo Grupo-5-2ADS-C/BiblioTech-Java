@@ -20,9 +20,9 @@ public class ConexaoSQL {
         
         dataSource.setUrl("jdbc:mysql://localhost:3306/bibliotech");
         
-        dataSource.setUsername("bibliotech");
+        dataSource.setUsername("root");
         
-        dataSource.setPassword("#urubu100");
+        dataSource.setPassword("urubu100");
         
         this.connection = new JdbcTemplate(dataSource);
     }

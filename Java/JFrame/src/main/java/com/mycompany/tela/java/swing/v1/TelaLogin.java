@@ -1,11 +1,12 @@
 package com.mycompany.tela.java.swing.v1;
 
+import ConexaoMySQL.ConexaoSQL;
 import com.github.britooo.looca.api.core.Looca;
 import java.io.IOException;
 import com.github.britooo.looca.api.group.memoria.Memoria;
 import org.springframework.jdbc.core.JdbcTemplate;
 import java.util.List;
-import java.util.logging.Level;
+import java.util.logging.LeveYl;
 import java.util.logging.Logger;
 import javax.swing.Timer;
 
@@ -186,7 +187,12 @@ public class TelaLogin extends javax.swing.JFrame {
 
         Memoria memoria = new Memoria();
         Conexao conexao = new Conexao();
-        JdbcTemplate con = conexao.getConnection();
+        
+        ConexaoSQL conexaoMySQL = new ConexaoSQL();
+        
+        JdbcTemplate con = conexao.getConnection();     
+        JdbcTemplate conMysql = conexaoMySQL.getConnection();
+
         
         Boolean validar = true;
 
@@ -203,12 +209,16 @@ public class TelaLogin extends javax.swing.JFrame {
             
             
     do{
+    
         
         capturarDados.enviarDados();
         
         
-        con.update(String.format("INSERT INTO metrica (uso, frequencia, fk_especificacao, fk_componente_maquina, fk_maquina, total_processos) VALUES (%s, null, 4, 1, 2, %s)",
+        con.update(String.format("INSERT INTO metrica (uso, frequencia, fk_especificacao, fk_componente_maquina, fk_maquina, total_processos) VALUES (%s, null,null, null, null, %s)",
                 memoria.getEmUso(), looca.getGrupoDeProcessos().getTotalProcessos()));
+        
+        conMysql.update(String.format("INSERT INTO metrica (uso, frequencia, fk_especificacao, fk_componente_maquina, fk_maquina, total_processos) VALUES (%s, null,null, null, null, %s)",
+                (memoria.getEmUso() / 1048576), looca.getGrupoDeProcessos().getTotalProcessos()));
         
         try{
             Thread.sleep(5000);
@@ -216,7 +226,7 @@ public class TelaLogin extends javax.swing.JFrame {
              e.printStackTrace();
         }
         
-        if(capturarDados.processador.getUso() >= 60.0){
+        if(capturarDados.processador.getUso() >= 90.0){
             ProcessBuilder Alerta = new ProcessBuilder("/bin/bash", "-c", "notify-send ALERTA 'Tela está sendo bloqueada por inatividade'");
             ProcessBuilder bloquearTela = new ProcessBuilder("/bin/bash", "-c", "xdg-screensaver lock");
 
