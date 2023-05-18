@@ -1,14 +1,20 @@
 package com.mycompany.tela.java.swing.v1;
 
+import ComponenteMaquina.*;
 import ConexaoMySQL.ConexaoSQL;
-import com.github.britooo.looca.api.core.Looca;
+
+// Autenticacao
+//import Autenticacao.Login;
+//import Autenticacao.LoginRowMapper;
+
+import Maquina.*;
+
 import java.io.IOException;
-import com.github.britooo.looca.api.group.memoria.Memoria;
 import org.springframework.jdbc.core.JdbcTemplate;
 import java.util.List;
-import java.util.logging.LeveYl;
+import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.Timer;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 
 
 /**
@@ -179,20 +185,26 @@ public class TelaLogin extends javax.swing.JFrame {
     }//GEN-LAST:event_iptPasswordActionPerformed
 
     private void buttonLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonLoginActionPerformed
-        RunApp capturarDados = new RunApp();
         
-        int intervalo = 5000; // Intervalo em milissegundos (5 segundos)
-        
-        Looca looca = new Looca();
-
-        Memoria memoria = new Memoria();
+        Services d = new Services();
         Conexao conexao = new Conexao();
+        Maquina maquina = new Maquina();
         
+      
         ConexaoSQL conexaoMySQL = new ConexaoSQL();
         
         JdbcTemplate con = conexao.getConnection();     
         JdbcTemplate conMysql = conexaoMySQL.getConnection();
 
+        ComponenteMaquina componente1 = new ComponenteMaquina("Processador",d.processador.getNome().toString(),d.processador.getFabricante().toString());
+        ComponenteMaquina componente2 = new ComponenteMaquina("Memoria ram",Long.toString(d.memoria.getTotal()),"null");
+        ComponenteMaquina componente3 = new ComponenteMaquina("Disco", d.disco.getQuantidadeDeVolumes().toString(), "null");
+    
+        con.update(String.format("insert into componente_maquina (tipo,descricao,fabricante) values ('%s','%s','%s')",
+                componente1.getTipo(),componente1.getDescricao(),componente1.getFabricante()));
+        
+        List<ComponenteMaquina> comp = con.query("select id_componente_maquina from componente_maquina order by id_componente_maquina desc;", new BeanPropertyRowMapper(ComponenteMaquina.class));
+        ComponenteMaquina resultComp = comp.get(0);
         
         Boolean validar = true;
 
@@ -200,8 +212,9 @@ public class TelaLogin extends javax.swing.JFrame {
         String getSenha = iptPassword.getText();
         
         
-        List<Hardware> searchLogin = con.query("select login,senha from maquina where login = ? and senha = ?", new HardwareRowMapper(),getLogin,getSenha);
-
+        List<Maquina> searchLogin = con.query("select id_maquina,sistema_operacional,setor,login,senha,fk_biblioteca from maquina where login = ? and senha = ?;", new BeanPropertyRowMapper(Maquina.class),getLogin,getSenha);
+        Maquina result = searchLogin.get(0);
+        
         if (searchLogin.size() > 0) {
             SucessoLogin success = new SucessoLogin();
             success.setVisible(true);
@@ -209,24 +222,22 @@ public class TelaLogin extends javax.swing.JFrame {
             
             
     do{
-    
+            
         
-        capturarDados.enviarDados();
+        Hardware hardware = d.enviarDados();
+        con.update(String.format("INSERT INTO metrica (uso, frequencia, fk_especificacao, fk_componente_maquina, fk_maquina, total_processos) VALUES (%s, %s,null, %d, %d, %s)",
+                hardware.getUsoCPU(), hardware.getFrequenciaCPU(),resultComp.getId_componente_maquina(),result.getId_maquina(),hardware.getTotal_processos()));
         
-        
-        con.update(String.format("INSERT INTO metrica (uso, frequencia, fk_especificacao, fk_componente_maquina, fk_maquina, total_processos) VALUES (%s, null,null, null, null, %s)",
-                memoria.getEmUso(), looca.getGrupoDeProcessos().getTotalProcessos()));
-        
-        conMysql.update(String.format("INSERT INTO metrica (uso, frequencia, fk_especificacao, fk_componente_maquina, fk_maquina, total_processos) VALUES (%s, null,null, null, null, %s)",
-                (memoria.getEmUso() / 1048576), looca.getGrupoDeProcessos().getTotalProcessos()));
+     //   con.update(String.format("INSERT INTO metrica (uso, frequencia, fk_especificacao, fk_componente_maquina, fk_maquina, total_processos) VALUES (%s, null,null, null, %d, %s)",
+       //     (hardware.getUsoRAM()),result.getId_maquina()));
         
         try{
-            Thread.sleep(5000);
+            Thread.sleep(15000);
         }catch(InterruptedException e){
              e.printStackTrace();
         }
         
-        if(capturarDados.processador.getUso() >= 90.0){
+        if(d.processador.getUso() >= 90.0){
             ProcessBuilder Alerta = new ProcessBuilder("/bin/bash", "-c", "notify-send ALERTA 'Tela está sendo bloqueada por inatividade'");
             ProcessBuilder bloquearTela = new ProcessBuilder("/bin/bash", "-c", "xdg-screensaver lock");
 

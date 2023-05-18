@@ -11,6 +11,17 @@ public class ComponenteMaquina {
     private String descricao;
     private String fabricante;
 
+    public ComponenteMaquina(String tipo, String descricao, String fabricante) {
+        this.tipo = tipo;
+        this.descricao = descricao;
+        this.fabricante = fabricante;
+    }
+    
+    public ComponenteMaquina(){
+        
+    }
+    
+
     public Integer getId_componente_maquina() {
         return id_componente_maquina;
     }

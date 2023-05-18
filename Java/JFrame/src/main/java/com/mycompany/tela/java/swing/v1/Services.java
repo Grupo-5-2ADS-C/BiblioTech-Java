@@ -13,25 +13,30 @@ import com.github.britooo.looca.api.group.processador.Processador;
 import com.github.britooo.looca.api.group.processos.Processo;
 import com.github.britooo.looca.api.group.processos.ProcessoGrupo;
 import com.github.britooo.looca.api.group.sistema.Sistema;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
+import ComponenteMaquina.*;
 import java.util.List;
 
 /**
  *
  * @author wesley
  */
-public class RunApp {
+public class Services {
     Looca looca = new Looca();
     Hardware hardware = new Hardware();
-    Sistema sistema = looca.getSistema();
-    Memoria memoria = looca.getMemoria();
+    Sistema sistema = new Sistema();
+    Memoria memoria = new Memoria();
     DiscoGrupo disco = looca.getGrupoDeDiscos();
     Processador processador = looca.getProcessador();
     ProcessoGrupo processos = looca.getGrupoDeProcessos(); 
     
     
-    public void enviarDados(){
+    
+    public Hardware enviarDados(){
+        
+        
+      // Total processos 
+      
+    hardware.setTotal_processos(looca.getGrupoDeProcessos().getTotalProcessos());
         
     String convertToString = String.format("%.2f", processador.getUso()).replace(",", ".");
     
@@ -64,7 +69,7 @@ public class RunApp {
     
     
     
-    
+        return hardware;
     }
    
     }

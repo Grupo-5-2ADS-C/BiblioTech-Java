@@ -6,12 +6,12 @@ package Login;
  */
 public class Login {
     
-    private Integer id_login;
-    private String login;
-    private String senha;
-    private Integer fk_biblioteca;
-    private Integer fk_funcionario;
-    private Integer fk_biblioteca_funcionario;
+   protected Integer id_login;
+   protected String login;
+   protected String senha;
+   protected Integer fk_biblioteca;
+   protected Integer fk_funcionario;
+   protected Integer fk_biblioteca_funcionario;
 
     public Integer getId_login() {
         return id_login;
