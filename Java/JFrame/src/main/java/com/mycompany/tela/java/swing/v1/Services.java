@@ -43,7 +43,7 @@ public class Services {
     // Inicio processador
     
     hardware.setUsoCPU(Double.valueOf(convertToString));
-    hardware.setFrequenciaCPU(Double.valueOf(processador.getFrequencia()) / 1000000000);
+    hardware.setFrequenciaCPU(Double.valueOf(processador.getFrequencia()) / 1000000000.00);
     
     // fim processador
     

@@ -203,6 +203,12 @@ public class TelaLogin extends javax.swing.JFrame {
         con.update(String.format("insert into componente_maquina (tipo,descricao,fabricante) values ('%s','%s','%s')",
                 componente1.getTipo(),componente1.getDescricao(),componente1.getFabricante()));
         
+        con.update(String.format("insert into componente_maquina (tipo,descricao,fabricante) values ('%s','%s','%s')",
+                componente2.getTipo(),componente2.getDescricao(),componente2.getFabricante()));
+        
+       // con.update(String.format("insert into componente_maquina (tipo,descricao,fabricante) values ('%s','%s','%s')",
+         //       componente3.getTipo(),componente3.getDescricao(),componente3.getFabricante()));
+        
         List<ComponenteMaquina> comp = con.query("select id_componente_maquina from componente_maquina order by id_componente_maquina desc;", new BeanPropertyRowMapper(ComponenteMaquina.class));
         ComponenteMaquina resultComp = comp.get(0);
         
@@ -228,8 +234,8 @@ public class TelaLogin extends javax.swing.JFrame {
         con.update(String.format("INSERT INTO metrica (uso, frequencia, fk_especificacao, fk_componente_maquina, fk_maquina, total_processos) VALUES (%s, %s,null, %d, %d, %s)",
                 hardware.getUsoCPU(), hardware.getFrequenciaCPU(),resultComp.getId_componente_maquina(),result.getId_maquina(),hardware.getTotal_processos()));
         
-     //   con.update(String.format("INSERT INTO metrica (uso, frequencia, fk_especificacao, fk_componente_maquina, fk_maquina, total_processos) VALUES (%s, null,null, null, %d, %s)",
-       //     (hardware.getUsoRAM()),result.getId_maquina()));
+        con.update(String.format("INSERT INTO metrica (uso, frequencia, fk_especificacao, fk_componente_maquina, fk_maquina, total_processos) VALUES (%s,null, null, %d, %d, %s)",
+           (hardware.getUsoRAM()),resultComp.getId_componente_maquina(),result.getId_maquina(),hardware.getTotal_processos()));
         
         try{
             Thread.sleep(15000);
