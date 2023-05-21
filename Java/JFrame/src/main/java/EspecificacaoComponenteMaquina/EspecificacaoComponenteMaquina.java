@@ -6,17 +6,27 @@ package EspecificacaoComponenteMaquina;
  */
 public class EspecificacaoComponenteMaquina {
     
-    private Integer id_especificacao_componente_maquina;
+    private Integer id_especificacao;
     private String numero_serial;
-    private Float uso_maximo;
-    private Float freq_maxima;
-
-    public Integer getId_especificacao_componente_maquina() {
-        return id_especificacao_componente_maquina;
+    private Double uso_maximo;
+    private Double freq_maxima;
+    
+    public EspecificacaoComponenteMaquina(String numero_serial, Double uso_maximo, Double freq_maxima) {
+        this.numero_serial = numero_serial;
+        this.uso_maximo = uso_maximo;
+        this.freq_maxima = freq_maxima;
     }
 
-    public void setId_especificacao_componente_maquina(Integer id_especificacao_componente_maquina) {
-        this.id_especificacao_componente_maquina = id_especificacao_componente_maquina;
+    public EspecificacaoComponenteMaquina() {
+        
+    }
+
+    public Integer getId_especificacao() {
+        return id_especificacao;
+    }
+
+    public void setId_especificacao(Integer id_especificacao) {
+        this.id_especificacao = id_especificacao;
     }
 
     public String getNumero_serial() {
@@ -27,19 +37,19 @@ public class EspecificacaoComponenteMaquina {
         this.numero_serial = numero_serial;
     }
 
-    public Float getUso_maximo() {
+    public Double getUso_maximo() {
         return uso_maximo;
     }
 
-    public void setUso_maximo(Float uso_maximo) {
+    public void setUso_maximo(Double uso_maximo) {
         this.uso_maximo = uso_maximo;
     }
 
-    public Float getFreq_maxima() {
+    public Double getFreq_maxima() {
         return freq_maxima;
     }
 
-    public void setFreq_maxima(Float freq_maxima) {
+    public void setFreq_maxima(Double freq_maxima) {
         this.freq_maxima = freq_maxima;
     }
     

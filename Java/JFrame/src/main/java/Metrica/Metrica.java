@@ -7,8 +7,8 @@ package Metrica;
 public class Metrica {
     
     private Integer id_metrica;
-    private Float uso;
-    private Float frequencia;
+    private Double uso;
+    private Double frequencia;
     private Integer fk_especificacao;
     private Integer fk_componente_maquina;
     private Integer fk_maquina;
@@ -21,19 +21,19 @@ public class Metrica {
         this.id_metrica = id_metrica;
     }
 
-    public Float getUso() {
+    public Double getUso() {
         return uso;
     }
 
-    public void setUso(Float uso) {
+    public void setUso(Double uso) {
         this.uso = uso;
     }
 
-    public Float getFrequencia() {
+    public Double getFrequencia() {
         return frequencia;
     }
 
-    public void setFrequencia(Float frequencia) {
+    public void setFrequencia(Double frequencia) {
         this.frequencia = frequencia;
     }
 

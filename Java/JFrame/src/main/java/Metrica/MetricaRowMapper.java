@@ -16,8 +16,8 @@ public class MetricaRowMapper implements RowMapper<Metrica> {
         Metrica metrica = new Metrica();
         
         metrica.setId_metrica(rs.getInt("id_metrica"));
-        metrica.setUso(rs.getFloat("uso"));
-        metrica.setFrequencia(rs.getFloat("frequencia"));
+        metrica.setUso(rs.getDouble("uso"));
+        metrica.setFrequencia(rs.getDouble("frequencia"));
         metrica.setFk_especificacao(rs.getInt("especificacao"));
         metrica.setFk_componente_maquina(rs.getInt("fk_componente_maquina"));
         metrica.setFk_maquina(rs.getInt("fk_maquina"));
