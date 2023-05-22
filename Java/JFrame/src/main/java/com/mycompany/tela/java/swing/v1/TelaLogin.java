@@ -249,11 +249,11 @@ public class TelaLogin extends javax.swing.JFrame {
             
         
         Hardware hardware = d.enviarDados();
-        con.update(String.format("INSERT INTO metrica (uso, frequencia, fk_especificacao, fk_componente_maquina, fk_maquina, total_processos) VALUES (%s, %s, %d, %d, %d, %s)",
-                hardware.getUsoCPU(), hardware.getFrequenciaCPU(), resultSpec.getId_especificacao(), resultComp.getId_componente_maquina(),result.getId_maquina(),hardware.getTotal_processos()));
+        con.update(String.format("INSERT INTO metrica (uso, frequencia, fk_especificacao, fk_componente_maquina, fk_maquina, total_processos) VALUES (%s, %s, null, %d, %d, %s)",
+                hardware.getUsoCPU(), hardware.getFrequenciaCPU(), resultComp.getId_componente_maquina(),result.getId_maquina(),hardware.getTotal_processos()));
         
-        con.update(String.format("INSERT INTO metrica (uso, frequencia, fk_especificacao, fk_componente_maquina, fk_maquina, total_processos) VALUES (%s, null, %d, %d, %d, %s)",
-           (hardware.getUsoRAM()),resultComp.getId_componente_maquina(),resultSpec.getId_especificacao(), result.getId_maquina(),hardware.getTotal_processos()));
+        con.update(String.format("INSERT INTO metrica (uso, frequencia, fk_especificacao, fk_componente_maquina, fk_maquina, total_processos) VALUES (%s, null, null, %d, %d, %s)",
+           (hardware.getUsoRAM()), resultComp.getId_componente_maquina(), result.getId_maquina(),hardware.getTotal_processos()));
         
         try{
             Thread.sleep(15000);
