@@ -191,6 +191,10 @@ public class TelaLogin extends javax.swing.JFrame {
         Conexao conexao = new Conexao();
         Maquina maquina = new Maquina();
         
+        // Pegando dados da input
+        String getLogin = iptLogin.getText();
+        String getSenha = iptPassword.getText();
+        
       
         ConexaoSQL conexaoMySQL = new ConexaoSQL();
         
@@ -201,30 +205,35 @@ public class TelaLogin extends javax.swing.JFrame {
         ComponenteMaquina componente2 = new ComponenteMaquina("Memoria ram",Long.toString(d.memoria.getTotal()),"null");
         ComponenteMaquina componente3 = new ComponenteMaquina("Disco", d.disco.getQuantidadeDeVolumes().toString(), "null");
     
-        /*con.update(String.format("insert into componente_maquina (tipo,descricao,fabricante) values ('%s','%s','%s')",
+         con.update(String.format("insert into componente_maquina (tipo,descricao,fabricante) values ('%s','%s','%s')",
                componente1.getTipo(),componente1.getDescricao(),componente1.getFabricante()));
         
         con.update(String.format("insert into componente_maquina (tipo,descricao,fabricante) values ('%s','%s','%s')",
                componente2.getTipo(),componente2.getDescricao(),componente2.getFabricante()));
         
         con.update(String.format("insert into componente_maquina (tipo,descricao,fabricante) values ('%s','%s','%s')",
-                componente3.getTipo(),componente3.getDescricao(),componente3.getFabricante()));*/
+                componente3.getTipo(),componente3.getDescricao(),componente3.getFabricante()));
+        
+        
         
         List<ComponenteMaquina> comp = con.query("select id_componente_maquina from componente_maquina order by id_componente_maquina desc;", new BeanPropertyRowMapper(ComponenteMaquina.class));
+        List<Maquina> searchLogin = con.query("select id_maquina,sistema_operacional,setor,login,senha,fk_biblioteca from maquina where login = ? and senha = ?;", new BeanPropertyRowMapper(Maquina.class),getLogin,getSenha);
+        Maquina result = searchLogin.get(0);
         ComponenteMaquina resultComp = comp.get(0);
         
         EspecificacaoComponenteMaquina spec1 = new EspecificacaoComponenteMaquina(d.processador.getId(), d.processador.getUso(), ((d.processador.getFrequencia().doubleValue()) / 1000000000.0));
         EspecificacaoComponenteMaquina spec2 = new EspecificacaoComponenteMaquina("null", (d.memoria.getTotal().doubleValue() / 1000000000), null);
         EspecificacaoComponenteMaquina spec3 = new EspecificacaoComponenteMaquina("null", (d.disco.getTamanhoTotal().doubleValue() / 1000000000), null);
         
-        /*con.update(String.format("insert into especificacao_componente_maquina (fk_componente_maquina ,fk_maquina, numero_serial, uso_maximo, freq_maxima) values (2, 2, '%s','%s','%s')",
-               spec1.getNumero_serial(), spec1.getUso_maximo().toString(), spec1.getFreq_maxima().toString()));
+          con.update(String.format("insert into especificacao_componente_maquina (fk_componente_maquina ,fk_maquina, numero_serial, uso_maximo, freq_maxima) values (%d, %d, '%s','%s','%s')",
+               resultComp.getId_componente_maquina(),result.getId_maquina(),spec1.getNumero_serial(), spec1.getUso_maximo().toString(), spec1.getFreq_maxima().toString()));
         
-        con.update(String.format("insert into especificacao_componente_maquina (fk_componente_maquina, fk_maquina, numero_serial, uso_maximo, freq_maxima) values (6, 2, null, '%s', null)",
-               spec2.getUso_maximo().toString()));
+         con.update(String.format("insert into especificacao_componente_maquina (fk_componente_maquina ,fk_maquina, numero_serial, uso_maximo, freq_maxima) values (%d, %d, '%s','%s',null)",
+               resultComp.getId_componente_maquina(),result.getId_maquina(),spec2.getNumero_serial(), spec2.getUso_maximo().toString()));
         
-        con.update(String.format("insert into especificacao_componente_maquina (fk_componente_maquina, fk_maquina, numero_serial, uso_maximo, freq_maxima) values (3, 2, null, '%s', null )",
-               spec3.getUso_maximo().toString()));*/
+          con.update(String.format("insert into especificacao_componente_maquina (fk_componente_maquina ,fk_maquina, numero_serial, uso_maximo, freq_maxima) values (%d, %d, '%s','%s',null)",
+               resultComp.getId_componente_maquina(),result.getId_maquina(),spec3.getNumero_serial(), spec3.getUso_maximo().toString()));
+        
         
         List<EspecificacaoComponenteMaquina> spec = con.query("select id_especificacao from especificacao_componente_maquina order by id_especificacao desc;",
                 new BeanPropertyRowMapper(EspecificacaoComponenteMaquina.class));
@@ -232,12 +241,7 @@ public class TelaLogin extends javax.swing.JFrame {
         
         Boolean validar = true;
 
-        String getLogin = iptLogin.getText();
-        String getSenha = iptPassword.getText();
         
-        
-        List<Maquina> searchLogin = con.query("select id_maquina,sistema_operacional,setor,login,senha,fk_biblioteca from maquina where login = ? and senha = ?;", new BeanPropertyRowMapper(Maquina.class),getLogin,getSenha);
-        Maquina result = searchLogin.get(0);
         
         if (searchLogin.size() > 0) {
             SucessoLogin success = new SucessoLogin();
@@ -245,16 +249,30 @@ public class TelaLogin extends javax.swing.JFrame {
             dispose();
             
             
-    do{
             
+            
+              try{
+            Thread.sleep(5000);
+        }catch(InterruptedException e){
+             e.printStackTrace();
+        }
+           dispose();
+
+              
+              
+    do{
+          
+        
         
         Hardware hardware = d.enviarDados();
-        con.update(String.format("INSERT INTO metrica (uso, frequencia, fk_especificacao, fk_componente_maquina, fk_maquina, total_processos) VALUES (%s, %s, null, %d, %d, %s)",
-                hardware.getUsoCPU(), hardware.getFrequenciaCPU(), resultComp.getId_componente_maquina(),result.getId_maquina(),hardware.getTotal_processos()));
+        con.update(String.format("INSERT INTO metrica (uso, frequencia, fk_especificacao, fk_componente_maquina, fk_maquina, total_processos) VALUES (%s, %s, %s, %d, %d, %s)",
+                hardware.getUsoCPU(), hardware.getFrequenciaCPU(),resultSpec.getId_especificacao(), resultComp.getId_componente_maquina(),result.getId_maquina(),hardware.getTotal_processos()));
         
-        con.update(String.format("INSERT INTO metrica (uso, frequencia, fk_especificacao, fk_componente_maquina, fk_maquina, total_processos) VALUES (%s, null, null, %d, %d, %s)",
-           (hardware.getUsoRAM()), resultComp.getId_componente_maquina(), result.getId_maquina(),hardware.getTotal_processos()));
-        
+        con.update(String.format("INSERT INTO metrica (uso, frequencia, fk_especificacao, fk_componente_maquina, fk_maquina, total_processos) VALUES (%s, null, %s, %d, %d, %s)",
+           (hardware.getUsoRAM()), resultSpec.getId_especificacao(),resultComp.getId_componente_maquina(), result.getId_maquina(),hardware.getTotal_processos()));
+       
+       
+       
         try{
             Thread.sleep(15000);
         }catch(InterruptedException e){

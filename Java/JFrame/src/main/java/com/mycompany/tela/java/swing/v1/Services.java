@@ -48,7 +48,7 @@ public class Services {
     // fim processador
     
     // Inicio ram
-        hardware.setUsoRAM(Double.valueOf(memoria.getEmUso() / 1048576));
+        hardware.setUsoRAM(Double.valueOf(memoria.getEmUso() * 100 / memoria.getTotal()));
     // fim ram
     
     // Inicio disco
