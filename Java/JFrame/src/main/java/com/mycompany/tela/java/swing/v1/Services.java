@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.mycompany.tela.java.swing.v1;
 
 import com.github.britooo.looca.api.core.Looca;
@@ -13,23 +9,65 @@ import com.github.britooo.looca.api.group.processador.Processador;
 import com.github.britooo.looca.api.group.processos.Processo;
 import com.github.britooo.looca.api.group.processos.ProcessoGrupo;
 import com.github.britooo.looca.api.group.sistema.Sistema;
-import ComponenteMaquina.*;
+import com.github.britooo.looca.api.group.rede.Rede;
+import com.github.britooo.looca.api.group.rede.RedeInterface;
+import com.github.britooo.looca.api.group.rede.RedeInterfaceGroup;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+import oshi.hardware.HWDiskStore;
 
 /**
  *
  * @author wesley
  */
 public class Services {
+    
     Looca looca = new Looca();
     Hardware hardware = new Hardware();
     Sistema sistema = new Sistema();
     Memoria memoria = new Memoria();
-    DiscoGrupo disco = looca.getGrupoDeDiscos();
+    DiscoGrupo discoGroup = looca.getGrupoDeDiscos();
+    Volume volumeA = discoGroup.getVolumes().get(0);
+    Disco disco = discoGroup.getDiscos().get(0);
+    Rede rede = looca.getRede();
+    RedeInterfaceGroup gruposDeInterface = rede.getGrupoDeInterfaces();
+    List<RedeInterface> interfaces = gruposDeInterface.getInterfaces();
+    List<RedeInterface> ListRedesComDados = interfaces.stream().filter(
+        rede -> rede.getBytesEnviados() > 0 && rede.getBytesRecebidos() > 0).toList();
+    RedeInterface redeDaVez = ListRedesComDados.get(0);
     Processador processador = looca.getProcessador();
     ProcessoGrupo processos = looca.getGrupoDeProcessos(); 
     
+    public Double getUsoDisco() {
+        return (((volumeA.getTotal().doubleValue() - volumeA.getDisponivel().doubleValue())
+               * 100.0) / volumeA.getTotal());
+    }
     
+    public Double getFreqDisco() {
+        return disco.getBytesDeEscritas().doubleValue() / 1073741824;
+    }
+    
+     private static Double byteConverterMega(long bytes){
+        return (double) bytes / (1024 * 1024);
+    }
+
+
+ public Double getDownload() throws InterruptedException {
+        long bytesRecebidosA = redeDaVez.getBytesRecebidos();
+        TimeUnit.SECONDS.sleep(1);
+        long bytesRecebidosB = redeDaVez.getBytesRecebidos();
+        long byteRecS = bytesRecebidosB - bytesRecebidosA;
+        return byteConverterMega(byteRecS);
+    }
+
+    public Double getUpload() throws InterruptedException{
+        long bytesEnviadosA = redeDaVez.getBytesEnviados();
+        TimeUnit.SECONDS.sleep(1);
+        long bytesEnviadosB = redeDaVez.getBytesEnviados();
+        long bytesEnvS = bytesEnviadosB - bytesEnviadosA;
+        return byteConverterMega(bytesEnvS);
+
+    }
     
     public Hardware enviarDados(){
         
@@ -70,6 +108,10 @@ public class Services {
     
     
         return hardware;
+    }
+
+    private HWDiskStore HWDiskStore(Disco disco) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
    
     }
