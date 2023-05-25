@@ -8,8 +8,10 @@ import EspecificacaoComponenteMaquina.EspecificacaoComponenteMaquina;
 //import Autenticacao.Login;
 //import Autenticacao.LoginRowMapper;
 import Maquina.*;
+import com.github.britooo.looca.api.group.rede.Rede;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import org.springframework.jdbc.core.JdbcTemplate;
 import java.util.List;
 import java.util.logging.Level;
@@ -201,7 +203,7 @@ public class TelaLogin extends javax.swing.JFrame {
         ComponenteMaquina componente1 = new ComponenteMaquina("Processador", d.processador.getNome().toString(), d.processador.getFabricante().toString());
         ComponenteMaquina componente2 = new ComponenteMaquina("Memoria ram", Long.toString(d.memoria.getTotal()), "null");
         ComponenteMaquina componente3 = new ComponenteMaquina("Disco", d.discoGroup.getQuantidadeDeVolumes().toString(), "null");
-
+        
         con.update(String.format("insert into componente_maquina (tipo,descricao,fabricante) values ('%s','%s','%s')",
                 componente1.getTipo(), componente1.getDescricao(), componente1.getFabricante()));
 
@@ -210,13 +212,17 @@ public class TelaLogin extends javax.swing.JFrame {
 
         con.update(String.format("insert into componente_maquina (tipo,descricao,fabricante) values ('%s','%s','%s')",
                 componente3.getTipo(), componente3.getDescricao(), componente3.getFabricante()));
-
+        
         List<ComponenteMaquina> comp = con.query("select id_componente_maquina from componente_maquina order by id_componente_maquina desc;", new BeanPropertyRowMapper(ComponenteMaquina.class));
         List<Maquina> searchLogin = con.query("select id_maquina,sistema_operacional,setor,login,senha,fk_biblioteca from maquina where login = ? and senha = ?;", new BeanPropertyRowMapper(Maquina.class), getLogin, getSenha);
 
         Maquina result = searchLogin.get(0);
         ComponenteMaquina resultComp = comp.get(0);
-
+        Hardware hardware = d.enviarDados();
+                
+        con.update(String.format("insert into rede (ipv4, ipv6, fk_maquina) values ('%s', '%s', %d)",
+                d.redeTable.getIpv4(), d.redeTable.getIpv6(), result.getId_maquina()));
+        
         EspecificacaoComponenteMaquina spec1 = new EspecificacaoComponenteMaquina(d.processador.getId(), d.processador.getUso(), ((d.processador.getFrequencia().doubleValue()) / 1000000000.0));
         EspecificacaoComponenteMaquina spec2 = new EspecificacaoComponenteMaquina("null", (d.memoria.getTotal().doubleValue() / 1000000000), null);
         EspecificacaoComponenteMaquina spec3 = new EspecificacaoComponenteMaquina(d.disco.getSerial(), (d.discoGroup.getTamanhoTotal().doubleValue() / 1000000000), null);
@@ -229,7 +235,9 @@ public class TelaLogin extends javax.swing.JFrame {
 
         con.update(String.format("insert into especificacao_componente_maquina (fk_componente_maquina ,fk_maquina, numero_serial, uso_maximo, freq_maxima) values (%d, %d, '%s','%s', null)",
                 resultComp.getId_componente_maquina(), result.getId_maquina(), spec3.getNumero_serial(), spec3.getUso_maximo().toString()));
-
+        
+        
+        
         List<EspecificacaoComponenteMaquina> spec = con.query("select id_especificacao from especificacao_componente_maquina order by id_especificacao desc;",
                 new BeanPropertyRowMapper(EspecificacaoComponenteMaquina.class));
         EspecificacaoComponenteMaquina resultSpec = spec.get(0);
@@ -250,12 +258,19 @@ public class TelaLogin extends javax.swing.JFrame {
 
             do {
 
-                Hardware hardware = d.enviarDados();
+                d.enviarDados();
+                
+                List<Rede> searchRede = con.query("select id_rede from rede order by id_rede desc", new BeanPropertyRowMapper(Rede.class));
+                Rede resultRede = searchRede.get(0);
+                
                 con.update(String.format("INSERT INTO metrica (uso, frequencia, fk_especificacao, fk_componente_maquina, fk_maquina, total_processos) VALUES (%s, %s, %s, %d, %d, %s)",
                         hardware.getUsoCPU(), hardware.getFrequenciaCPU(), resultSpec.getId_especificacao(), resultComp.getId_componente_maquina(), result.getId_maquina(), hardware.getTotal_processos()));
         
                 con.update(String.format("INSERT INTO metrica (uso, frequencia, fk_especificacao, fk_componente_maquina, fk_maquina, total_processos) VALUES (%s, null, %s, %d, %d, %s)",
                         (hardware.getUsoRAM()), resultSpec.getId_especificacao(), resultComp.getId_componente_maquina(), result.getId_maquina(), hardware.getTotal_processos()));
+                
+                //con.update(String.format("insert into metrica_rede (velocidade_download, velocidade_upload, fk_rede) values ('%s', '%s', %d)",
+                //        d.getDownload(), d.getUpload(), resultRede.))
 
                 try {
                     Thread.sleep(15000);
@@ -264,20 +279,20 @@ public class TelaLogin extends javax.swing.JFrame {
                 }
 
                 if (d.processador.getUso() >= 90.0) {
-                    ProcessBuilder Alerta = new ProcessBuilder("/bin/bash", "-c", "notify-send ALERTA 'Tela está sendo bloqueada por inatividade'");
+                                        
+                    
+                    
+                }
 
+                if (d.processador.getUso() < 2.0) {
+                    ProcessBuilder Alerta = new ProcessBuilder("/bin/bash", "-c", "notify-send ALERTA 'Tela está sendo bloqueada por inatividade'");
+                    ProcessBuilder bloquearTela = new ProcessBuilder("/bin/bash", "-c", "xdg-screensaver lock");
+                    // rundll32.exe user32.dll,LockWorkStation p/ Windows
                     try {
                         Process alerta = Alerta.start();
                     } catch (IOException ex) {
                         Logger.getLogger(TelaLogin.class.getName()).log(Level.SEVERE, null, ex);
                     }
-
-                }
-
-                if (d.processador.getUso() < 2.0) {
-                    ProcessBuilder bloquearTela = new ProcessBuilder("/bin/bash", "-c", "xdg-screensaver lock");
-                    // rundll32.exe user32.dll,LockWorkStation p/ Windows
-
                     try {
                         Thread.sleep(210000);
                         Process bloquear = bloquearTela.start();

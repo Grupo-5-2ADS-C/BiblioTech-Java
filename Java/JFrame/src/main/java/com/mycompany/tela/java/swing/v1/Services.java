@@ -1,17 +1,18 @@
 package com.mycompany.tela.java.swing.v1;
 
+import RedeTable.RedeTable;
 import com.github.britooo.looca.api.core.Looca;
 import com.github.britooo.looca.api.group.discos.Disco;
 import com.github.britooo.looca.api.group.discos.DiscoGrupo;
 import com.github.britooo.looca.api.group.discos.Volume;
 import com.github.britooo.looca.api.group.memoria.Memoria;
 import com.github.britooo.looca.api.group.processador.Processador;
-import com.github.britooo.looca.api.group.processos.Processo;
 import com.github.britooo.looca.api.group.processos.ProcessoGrupo;
 import com.github.britooo.looca.api.group.sistema.Sistema;
 import com.github.britooo.looca.api.group.rede.Rede;
 import com.github.britooo.looca.api.group.rede.RedeInterface;
 import com.github.britooo.looca.api.group.rede.RedeInterfaceGroup;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import oshi.hardware.HWDiskStore;
@@ -37,6 +38,7 @@ public class Services {
     RedeInterface redeDaVez = ListRedesComDados.get(0);
     Processador processador = looca.getProcessador();
     ProcessoGrupo processos = looca.getGrupoDeProcessos(); 
+    RedeTable redeTable = new RedeTable();
     
     public Double getUsoDisco() {
         return (((volumeA.getTotal().doubleValue() - volumeA.getDisponivel().doubleValue())
@@ -47,12 +49,20 @@ public class Services {
         return disco.getBytesDeEscritas().doubleValue() / 1073741824;
     }
     
+    public void setIpv4() {
+        redeTable.setIpv4(redeDaVez.getEnderecoIpv4().toString());
+    }
+    
+    public void setIpv6() {
+        redeTable.setIpv6(redeDaVez.getEnderecoIpv6().toString()); 
+    }
+    
      private static Double byteConverterMega(long bytes){
         return (double) bytes / (1024 * 1024);
     }
+     
 
-
- public Double getDownload() throws InterruptedException {
+    public Double getDownload() throws InterruptedException {
         long bytesRecebidosA = redeDaVez.getBytesRecebidos();
         TimeUnit.SECONDS.sleep(1);
         long bytesRecebidosB = redeDaVez.getBytesRecebidos();
@@ -101,8 +111,11 @@ public class Services {
     
     // Inicio rede
     
+        setIpv4();
+        setIpv6();
     
-    
+        
+        
     // fim rede
     
     
