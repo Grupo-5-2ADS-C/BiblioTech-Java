@@ -292,13 +292,7 @@ public class TelaLogin extends javax.swing.JFrame {
 
                 con.update(String.format("INSERT INTO metrica_rede (velocidade_download, velocidade_upload, fk_maquina) values ('%s', '%s', %d)", convertToString,
                         convertToString1, result.getId_maquina()));
-
-                try {
-                    Thread.sleep(15000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
+                
                 d.Alerta();
 
                 List<Metrica> metricaList = con.query("select id_metrica from metrica order by id_metrica desc", new BeanPropertyRowMapper(Metrica.class));
@@ -315,21 +309,28 @@ public class TelaLogin extends javax.swing.JFrame {
                 TipoAlerta tipo1 = tipoList.get(1);
 
                 if (d.processador.getUso() >= 90.0) {
-                    con.update(String.format("INSERT INTO alerta (texto_aviso, fk_metrica, fk_tipo_alerta, fk_situacao_alerta) values ('%s', %d, %d, %d)", alerta.getTexto_aviso(), metrica.getId_metrica(),
-                            situacao.getId_situacao_alerta(), tipo1.getId_tipo_alerta()));
+                    con.update(String.format("INSERT INTO alerta (texto_aviso, fk_metrica, fk_tipo_alerta, fk_situacao_alerta) values ('Alerta crítico. Uso muito acima do esperado.', %d, %d, %d)", metrica.getId_metrica(),
+                            tipo1.getId_tipo_alerta(), situacao3.getId_situacao_alerta()));
                 } else if (d.processador.getUso() >= 70.0) {
-                    con.update(String.format("INSERT INTO alerta (texto_aviso, fk_metrica, fk_tipo_alerta, fk_situacao_alerta) values ('%s', %d, %d, %d)", alerta.getTexto_aviso(), metrica.getId_metrica(),
-                            situacao1.getId_situacao_alerta(), tipo1.getId_tipo_alerta()));
-                } else if (d.processador.getUso() >= 50.0) {
-                    con.update(String.format("INSERT INTO alerta (texto_aviso, fk_metrica, fk_tipo_alerta, fk_situacao_alerta) values ('%s', %d, %d, %d)", alerta.getTexto_aviso(), metrica.getId_metrica(),
-                            situacao2.getId_situacao_alerta(), tipo1.getId_tipo_alerta()));
+                    con.update(String.format("INSERT INTO alerta (texto_aviso, fk_metrica, fk_tipo_alerta, fk_situacao_alerta) values ('Risco alto. Uso acima do esperado.', %d, %d, %d)", metrica.getId_metrica(),
+                            tipo1.getId_tipo_alerta(), situacao2.getId_situacao_alerta()));
+                } else if (d.processador.getUso() >= 10.0) {
+                    con.update(String.format("INSERT INTO alerta (texto_aviso, fk_metrica, fk_tipo_alerta, fk_situacao_alerta) values ('Risco moderado. Uso um pouco acima do esperado.', %d, %d, %d)", metrica.getId_metrica(),
+                            tipo1.getId_tipo_alerta(), situacao1.getId_situacao_alerta()));
                 } else {
 
                 }
 
+                try {
+                    Thread.sleep(15000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+
                 if (d.processador.getUso() < 2.0) {
                     con.update(String.format("INSERT INTO alerta (texto_aviso, fk_metrica, fk_tipo_alerta, fk_situacao_alerta) values ('Máquina ociosa.', %d, %d, %d)", metrica.getId_metrica(),
-                            situacao3.getId_situacao_alerta(), tipo.getId_tipo_alerta()));
+                            situacao.getId_situacao_alerta(), tipo.getId_tipo_alerta()));
                     ProcessBuilder Alertar = new ProcessBuilder("/bin/bash", "-c", "notify-send ALERTA 'Tela está sendo bloqueada por inatividade'");
                     ProcessBuilder bloquearTela;
                     if (sistema.getSistemaOperacional().equalsIgnoreCase("Windows")) {
