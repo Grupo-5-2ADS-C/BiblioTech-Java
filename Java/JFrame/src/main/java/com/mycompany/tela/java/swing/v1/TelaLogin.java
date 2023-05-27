@@ -14,6 +14,9 @@ import TipoAlerta.*;
 import Maquina.*;
 import com.github.britooo.looca.api.core.Looca;
 import com.github.britooo.looca.api.group.sistema.Sistema;
+import com.github.seratch.jslack.Slack;
+import com.github.seratch.jslack.api.webhook.Payload;
+import com.github.seratch.jslack.api.webhook.WebhookResponse;
 
 import java.io.IOException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -27,6 +30,10 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
  * @author viniciuspereira
  */
 public class TelaLogin extends javax.swing.JFrame {
+    
+    private String webHookUrl = "https://hooks.slack.com/services/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";
+    private String oAuthUrl = "xoxb-5093777488852-5333612574403-W3b7WjrgBb3Ht7Hg2kOOBs4i";
+    private String slackChannelUrl = "monitoramento-de-máquinas";
 
     /**
      * Creates new form TelaLogin
@@ -191,6 +198,10 @@ public class TelaLogin extends javax.swing.JFrame {
 
     private void buttonLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonLoginActionPerformed
 
+        
+        //Aqui se passa a mensagem para o metodo
+        sendToSlack("Hello World!");
+        
         Looca looca = new Looca();
         Services d = new Services();
         Conexao conexao = new Conexao();
@@ -399,6 +410,21 @@ public class TelaLogin extends javax.swing.JFrame {
             }
         });
 
+    }
+    
+    //Metodo para enviar mensafem para o slack
+    public void sendToSlack(String mensagem) {
+
+        try {
+            StringBuilder msgbuilder = new StringBuilder();
+            msgbuilder.append(mensagem);
+
+            Payload payload = Payload.builder().channel(slackChannelUrl).text(msgbuilder.toString()).build();
+
+            WebhookResponse wbResp = Slack.getInstance().send(webHookUrl, payload);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
