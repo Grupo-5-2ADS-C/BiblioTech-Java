@@ -218,9 +218,9 @@ public class TelaLogin extends javax.swing.JFrame {
             dispose();
 
             // Inserts na tabela componente_maquina
-            ComponenteMaquina componente1 = new ComponenteMaquina("Processador", d.processador.getNome().toString(), d.processador.getFabricante().toString());
-            ComponenteMaquina componente2 = new ComponenteMaquina("Memoria ram", Long.toString(d.memoria.getTotal()), "null");
-            ComponenteMaquina componente3 = new ComponenteMaquina("Disco", d.discoGroup.getQuantidadeDeVolumes().toString(), "null");
+            ComponenteMaquina componente1 = new ComponenteMaquina("Processador", d.processador.getNome(), d.processador.getFabricante());
+            ComponenteMaquina componente2 = new ComponenteMaquina("Memoria ram", (d.memoria.getTotal().doubleValue() / 1000000000.0), "null");
+            ComponenteMaquina componente3 = new ComponenteMaquina("Disco", d.disco.getModelo(), "null");
 
             con.update(String.format("insert into componente_maquina (tipo,descricao,fabricante) values ('%s','%s','%s')",
                     componente1.getTipo(), componente1.getDescricao(), componente1.getFabricante()));
@@ -313,23 +313,18 @@ public class TelaLogin extends javax.swing.JFrame {
                 List<TipoAlerta> tipoList = con.query("select id_tipo_alerta from tipo_alerta order by id_tipo_alerta desc", new BeanPropertyRowMapper(TipoAlerta.class));
                 TipoAlerta tipo = tipoList.get(0);
                 TipoAlerta tipo1 = tipoList.get(1);
-                
-                if(alerta.getTexto_aviso() == null) {
-                    
-                } else {
-                    
-                    if (alerta.getTexto_aviso().equals("Alerta crítico. Uso muito acima do esperado.")) {
-                        con.update(String.format("INSERT INTO alerta (texto_aviso, fk_metrica, fk_tipo_alerta, fk_situacao_alerta) values ('%s', %d, %d, %d)", alerta.getTexto_aviso(), metrica.getId_metrica(),
-                                situacao.getId_situacao_alerta(), tipo1.getId_tipo_alerta()));
-                    } else if (alerta.getTexto_aviso().equals("Risco alto. Uso acima do esperado.")) {
-                        con.update(String.format("INSERT INTO alerta (texto_aviso, fk_metrica, fk_tipo_alerta, fk_situacao_alerta) values ('%s', %d, %d, %d)", alerta.getTexto_aviso(), metrica.getId_metrica(),
-                                situacao1.getId_situacao_alerta(), tipo1.getId_tipo_alerta()));
-                    } else if (alerta.getTexto_aviso().equals("Risco moderado. Uso um pouco acima do esperado.")) {
-                        con.update(String.format("INSERT INTO alerta (texto_aviso, fk_metrica, fk_tipo_alerta, fk_situacao_alerta) values ('%s', %d, %d, %d)", alerta.getTexto_aviso(), metrica.getId_metrica(),
-                                situacao2.getId_situacao_alerta(), tipo1.getId_tipo_alerta()));
-                    } else {
 
-                    }
+                if (d.processador.getUso() >= 90.0) {
+                    con.update(String.format("INSERT INTO alerta (texto_aviso, fk_metrica, fk_tipo_alerta, fk_situacao_alerta) values ('%s', %d, %d, %d)", alerta.getTexto_aviso(), metrica.getId_metrica(),
+                            situacao.getId_situacao_alerta(), tipo1.getId_tipo_alerta()));
+                } else if (d.processador.getUso() >= 70.0) {
+                    con.update(String.format("INSERT INTO alerta (texto_aviso, fk_metrica, fk_tipo_alerta, fk_situacao_alerta) values ('%s', %d, %d, %d)", alerta.getTexto_aviso(), metrica.getId_metrica(),
+                            situacao1.getId_situacao_alerta(), tipo1.getId_tipo_alerta()));
+                } else if (d.processador.getUso() >= 50.0) {
+                    con.update(String.format("INSERT INTO alerta (texto_aviso, fk_metrica, fk_tipo_alerta, fk_situacao_alerta) values ('%s', %d, %d, %d)", alerta.getTexto_aviso(), metrica.getId_metrica(),
+                            situacao2.getId_situacao_alerta(), tipo1.getId_tipo_alerta()));
+                } else {
+
                 }
 
                 if (d.processador.getUso() < 2.0) {

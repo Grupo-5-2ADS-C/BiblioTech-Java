@@ -17,6 +17,12 @@ public class ComponenteMaquina {
         this.fabricante = fabricante;
     }
     
+    public ComponenteMaquina(String tipo, Double descricao, String fabricante) {
+        this.tipo = tipo;
+        this.descricao = descricao.toString();
+        this.fabricante = fabricante;
+    }
+    
     public ComponenteMaquina(){
         
     }
