@@ -8,10 +8,8 @@ import EspecificacaoComponenteMaquina.EspecificacaoComponenteMaquina;
 //import Autenticacao.Login;
 //import Autenticacao.LoginRowMapper;
 import Maquina.*;
-import com.github.britooo.looca.api.group.rede.Rede;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import org.springframework.jdbc.core.JdbcTemplate;
 import java.util.List;
 import java.util.logging.Level;
@@ -217,8 +215,15 @@ public class TelaLogin extends javax.swing.JFrame {
         List<Maquina> searchLogin = con.query("select id_maquina,sistema_operacional,setor,login,senha,fk_biblioteca from maquina where login = ? and senha = ?;", new BeanPropertyRowMapper(Maquina.class), getLogin, getSenha);
 
         Maquina result = searchLogin.get(0);
-        ComponenteMaquina resultComp = comp.get(0);
-        Hardware hardware = d.enviarDados();
+        
+                ComponenteMaquina resultComp = comp.get(0);
+                ComponenteMaquina resultComp1 = comp.get(1);
+                ComponenteMaquina resultComp2 = comp.get(2);
+                
+                System.out.println(resultComp.getId_componente_maquina());  
+                System.out.println(resultComp1.getId_componente_maquina());    
+                System.out.println(resultComp2.getId_componente_maquina());    
+
 
         //con.update(String.format("insert into rede (ipv4, ipv6, fk_maquina) values ('%s', '%s', %d)",
         //        d.redeTable.getIpv4(), d.redeTable.getIpv6(), result.getId_maquina()));
@@ -227,17 +232,20 @@ public class TelaLogin extends javax.swing.JFrame {
         EspecificacaoComponenteMaquina spec3 = new EspecificacaoComponenteMaquina(d.disco.getSerial(), (d.discoGroup.getTamanhoTotal().doubleValue() / 1000000000), null);
 
         con.update(String.format("insert into especificacao_componente_maquina (fk_componente_maquina ,fk_maquina, numero_serial, uso_maximo, freq_maxima) values (%d, %d, '%s','%s','%s')",
-                resultComp.getId_componente_maquina(), result.getId_maquina(), spec1.getNumero_serial(), spec1.getUso_maximo().toString(), spec1.getFreq_maxima().toString()));
+                resultComp2.getId_componente_maquina(), result.getId_maquina(), spec1.getNumero_serial(), spec1.getUso_maximo().toString(), spec1.getFreq_maxima().toString()));
 
         con.update(String.format("insert into especificacao_componente_maquina (fk_componente_maquina ,fk_maquina, numero_serial, uso_maximo, freq_maxima) values (%d, %d, '%s','%s', null)",
-                resultComp.getId_componente_maquina(), result.getId_maquina(), spec2.getNumero_serial(), spec2.getUso_maximo().toString()));
+                resultComp1.getId_componente_maquina(), result.getId_maquina(), spec2.getNumero_serial(), spec2.getUso_maximo().toString()));
 
         con.update(String.format("insert into especificacao_componente_maquina (fk_componente_maquina ,fk_maquina, numero_serial, uso_maximo, freq_maxima) values (%d, %d, '%s','%s', null)",
                 resultComp.getId_componente_maquina(), result.getId_maquina(), spec3.getNumero_serial(), spec3.getUso_maximo().toString()));
 
         List<EspecificacaoComponenteMaquina> spec = con.query("select id_especificacao from especificacao_componente_maquina order by id_especificacao desc;",
                 new BeanPropertyRowMapper(EspecificacaoComponenteMaquina.class));
-        EspecificacaoComponenteMaquina resultSpec = spec.get(0);
+        EspecificacaoComponenteMaquina resultSpec = spec.get(0); 
+        EspecificacaoComponenteMaquina resultSpec1 = spec.get(1);
+        EspecificacaoComponenteMaquina resultSpec2 = spec.get(2);
+
 
         Boolean validar = true;
 
@@ -254,16 +262,14 @@ public class TelaLogin extends javax.swing.JFrame {
             dispose();
 
             do {
-
-                d.enviarDados();
-
+                        Hardware hardware = d.enviarDados();
                 //List<Rede> searchRede = con.query("select id_rede from rede order by id_rede desc", new BeanPropertyRowMapper(Rede.class));
                 //Rede resultRede = searchRede.get(0);
                 con.update(String.format("INSERT INTO metrica (uso, frequencia, fk_especificacao, fk_componente_maquina, fk_maquina, total_processos) VALUES (%s, %s, %d, %d, %d, %s)",
-                        hardware.getUsoCPU(), hardware.getFrequenciaCPU(), resultSpec.getId_especificacao(), resultComp.getId_componente_maquina(), result.getId_maquina(), hardware.getTotal_processos()));
+                        hardware.getUsoCPU(), hardware.getFrequenciaCPU(), resultSpec2.getId_especificacao(), resultComp2.getId_componente_maquina(), result.getId_maquina(), hardware.getTotal_processos()));
 
                 con.update(String.format("INSERT INTO metrica (uso, frequencia, fk_especificacao, fk_componente_maquina, fk_maquina, total_processos) VALUES (%s, null, %d, %d, %d, %s)",
-                        (hardware.getUsoRAM()), resultSpec.getId_especificacao(), resultComp.getId_componente_maquina(), result.getId_maquina(), hardware.getTotal_processos()));
+                        (hardware.getUsoRAM()), resultSpec1.getId_especificacao(), resultComp1.getId_componente_maquina(), result.getId_maquina(), hardware.getTotal_processos()));
 
                 con.update(String.format("INSERT INTO metrica (uso, frequencia, fk_especificacao, fk_componente_maquina, fk_maquina, total_processos) VALUES ('%s', '%s', %d, %d, %d, %s)",
                         d.getUsoDisco(), d.getFreqDisco(), resultSpec.getId_especificacao(), resultComp.getId_componente_maquina(), result.getId_maquina(), hardware.getTotal_processos()));

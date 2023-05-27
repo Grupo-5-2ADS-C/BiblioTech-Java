@@ -22,8 +22,20 @@ public class Teste {
         Services d = new Services();
         Hardware hardware = new Hardware();
 
-        System.out.println(d.getUsoDisco());
-        System.out.println(d.getFreqDisco());
+        
+                List<ComponenteMaquina> comp = con.query("select id_componente_maquina from componente_maquina order by id_componente_maquina desc;", new BeanPropertyRowMapper(ComponenteMaquina.class));
+                ComponenteMaquina resultComp = comp.get(0);
+                ComponenteMaquina resultComp1 = comp.get(1);
+                ComponenteMaquina resultComp2 = comp.get(2);
+                
+                System.out.println(resultComp.getId_componente_maquina());  
+                System.out.println(resultComp1.getId_componente_maquina());    
+                System.out.println(resultComp2.getId_componente_maquina());    
+
+
+
+
+
 
     }
 
