@@ -15,8 +15,8 @@ public class Hardware {
     
     private Double usoRAM;
     
-    private Double usoDISCO;
-    private Double frequenciaDISCO;
+    private String usoDISCO;
+    private String frequenciaDISCO;
     
     private Integer total_processos;
 
@@ -44,19 +44,19 @@ public class Hardware {
         this.usoRAM = usoRAM;
     }
 
-    public Double getUsoDISCO() {
+    public String getUsoDISCO() {
         return usoDISCO;
     }
 
-    public void setUsoDISCO(Double usoDISCO) {
+    public void setUsoDISCO(String usoDISCO) {
         this.usoDISCO = usoDISCO;
     }
 
-    public Double getFrequenciaDISCO() {
+    public String getFrequenciaDISCO() {
         return frequenciaDISCO;
     }
 
-    public void setFrequenciaDISCO(Double frequenciaDISCO) {
+    public void setFrequenciaDISCO(String frequenciaDISCO) {
         this.frequenciaDISCO = frequenciaDISCO;
     }
 

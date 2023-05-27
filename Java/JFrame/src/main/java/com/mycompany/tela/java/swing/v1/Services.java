@@ -40,21 +40,13 @@ public class Services {
     ProcessoGrupo processos = looca.getGrupoDeProcessos(); 
     RedeTable redeTable = new RedeTable();
     
-    public Double getUsoDisco() {
-        return (((volumeA.getTotal().doubleValue() - volumeA.getDisponivel().doubleValue())
-               * 100.0) / volumeA.getTotal());
+    public String getUsoDisco() {
+        return String.format("%.2f",(((volumeA.getTotal().doubleValue() - volumeA.getDisponivel().doubleValue())
+               * 100.0) / volumeA.getTotal())).replace(",", ".");
     }
     
-    public Double getFreqDisco() {
-        return disco.getBytesDeEscritas().doubleValue() / 1073741824;
-    }
-    
-    public void setIpv4() {
-        redeTable.setIpv4(redeDaVez.getEnderecoIpv4().toString());
-    }
-    
-    public void setIpv6() {
-        redeTable.setIpv6(redeDaVez.getEnderecoIpv6().toString()); 
+    public String getFreqDisco() {
+        return String.format("%.2f", disco.getBytesDeEscritas().doubleValue() / 1073741824).replace(",", ".");
     }
     
      private static Double byteConverterMega(long bytes){
@@ -106,25 +98,21 @@ public class Services {
 
         //Obtendo lista de discos a partir do getter
         List<Volume> volume = grupoDeDiscos.getVolumes();
+        
+        // Set Uso e Set Frequência
+        hardware.setUsoDISCO(getUsoDisco());
+        hardware.setFrequenciaDISCO(getFreqDisco());
     
     //fim disco
     
     // Inicio rede
-    
-        setIpv4();
-        setIpv6();
-    
-        
+     
         
     // fim rede
     
     
     
         return hardware;
-    }
-
-    private HWDiskStore HWDiskStore(Disco disco) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
    
     }
