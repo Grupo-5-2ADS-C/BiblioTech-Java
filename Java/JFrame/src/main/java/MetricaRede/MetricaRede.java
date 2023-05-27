@@ -14,6 +14,9 @@ public class MetricaRede {
         this.velocidade_upload = velocidade_upload;
     }
 
+    public MetricaRede() {
+    }
+
     public Double getVelocidade_download() {
         return velocidade_download;
     }

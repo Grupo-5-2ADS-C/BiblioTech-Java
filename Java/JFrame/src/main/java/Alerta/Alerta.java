@@ -15,6 +15,18 @@ public class Alerta {
     private Integer fk_tipo_alerta;
     private Integer fk_situacao_alerta;
 
+    public Alerta(Integer id_alerta, Date dt_alerta, String texto_aviso, Integer fk_metrica, Integer fk_tipo_alerta, Integer fk_situacao_alerta) {
+        this.id_alerta = id_alerta;
+        this.dt_alerta = dt_alerta;
+        this.texto_aviso = texto_aviso;
+        this.fk_metrica = fk_metrica;
+        this.fk_tipo_alerta = fk_tipo_alerta;
+        this.fk_situacao_alerta = fk_situacao_alerta;
+    }
+
+    public Alerta() {
+    }
+    
     public Integer getId_alerta() {
         return id_alerta;
     }

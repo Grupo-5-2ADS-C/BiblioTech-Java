@@ -9,6 +9,14 @@ public class SituacaoAlerta {
     private Integer id_situacao_alerta;
     private String situacao_alerta;
 
+    public SituacaoAlerta(Integer id_situacao_alerta, String situacao_alerta) {
+        this.id_situacao_alerta = id_situacao_alerta;
+        this.situacao_alerta = situacao_alerta;
+    }
+
+    public SituacaoAlerta() {
+    }
+    
     public Integer getId_situacao_alerta() {
         return id_situacao_alerta;
     }
