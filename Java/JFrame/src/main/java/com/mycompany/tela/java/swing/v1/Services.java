@@ -47,7 +47,7 @@ public class Services {
 
     Metrica metrica = new Metrica();
 
-    Alerta alerta = new Alerta();
+    public Alerta alerta = new Alerta();
 
     public String Alerta() {
         if (processador.getUso() >= 90.0) {
