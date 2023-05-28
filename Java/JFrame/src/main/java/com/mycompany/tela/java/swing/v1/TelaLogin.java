@@ -19,6 +19,7 @@ import com.github.seratch.jslack.api.webhook.Payload;
 import com.github.seratch.jslack.api.webhook.WebhookResponse;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
 import org.springframework.jdbc.core.JdbcTemplate;
 import java.util.List;
 import java.util.logging.Level;
@@ -31,8 +32,8 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
  */
 public class TelaLogin extends javax.swing.JFrame {
     
-    private String webHookUrl = "https://hooks.slack.com/services/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";
-    private String oAuthUrl = "xoxb-5093777488852-5333612574403-W3b7WjrgBb3Ht7Hg2kOOBs4i";
+    private String webHookUrl = "https://hooks.slack.com/services/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";
+    private String oAuthUrl = "xoxb-5093777488852-5347584044833-rXCGMQtLQb13bfP1BAm08m8q";
     private String slackChannelUrl = "monitoramento-de-máquinas";
 
     /**
@@ -200,7 +201,6 @@ public class TelaLogin extends javax.swing.JFrame {
 
         
         //Aqui se passa a mensagem para o metodo
-        sendToSlack("Hello World!");
         
         Looca looca = new Looca();
         Services d = new Services();
@@ -225,19 +225,24 @@ public class TelaLogin extends javax.swing.JFrame {
         // Começando os inserts dos dados, caso o Login e a Senha estejam corretos
         if (searchLogin.size() > 0) {
             SucessoLogin success = new SucessoLogin();
+            sendToSlack("Maquina com id " + result.getId_maquina() + " Iniciada!");
             success.setVisible(true);
             dispose();
 
             // Inserts na tabela componente_maquina
             ComponenteMaquina componente1 = new ComponenteMaquina("Processador", d.processador.getNome(), d.processador.getFabricante());
-            ComponenteMaquina componente2 = new ComponenteMaquina("Memoria ram", (d.memoria.getTotal().doubleValue() / 1000000000.0), "null");
+            ComponenteMaquina componente2 = new ComponenteMaquina("Memoria ram", (d.memoria.getTotal().doubleValue() / 1048576), "null");
             ComponenteMaquina componente3 = new ComponenteMaquina("Disco", d.disco.getModelo(), "null");
 
             con.update(String.format("insert into componente_maquina (tipo,descricao,fabricante) values ('%s','%s','%s')",
                     componente1.getTipo(), componente1.getDescricao(), componente1.getFabricante()));
 
+            DecimalFormat df = new DecimalFormat("0.00");
+            Double numero = Double.valueOf(componente2.getDescricao());
+            String saida = df.format(numero);
+
             con.update(String.format("insert into componente_maquina (tipo,descricao,fabricante) values ('%s','%s','%s')",
-                    componente2.getTipo(), componente2.getDescricao(), componente2.getFabricante()));
+                    componente2.getTipo(), saida, componente2.getFabricante()));
 
             con.update(String.format("insert into componente_maquina (tipo,descricao,fabricante) values ('%s','%s','%s')",
                     componente3.getTipo(), componente3.getDescricao(), componente3.getFabricante()));
@@ -320,12 +325,15 @@ public class TelaLogin extends javax.swing.JFrame {
                 TipoAlerta tipo1 = tipoList.get(1);
 
                 if (d.processador.getUso() >= 90.0) {
+                    sendToSlack("Maquina com id " + result.getId_maquina() + " localizada no setor " + result.getSetor() + " está com uso de CPU acima de 90%! (CRITICO)");
                     con.update(String.format("INSERT INTO alerta (texto_aviso, fk_metrica, fk_tipo_alerta, fk_situacao_alerta) values ('Alerta crítico. Uso muito acima do esperado.', %d, %d, %d)", metrica.getId_metrica(),
                             tipo1.getId_tipo_alerta(), situacao3.getId_situacao_alerta()));
                 } else if (d.processador.getUso() >= 70.0) {
+                     sendToSlack("Maquina com id " + result.getId_maquina() + " localizada no setor " + result.getSetor() + " está com uso de CPU acima de 70% (Risco alto)");
                     con.update(String.format("INSERT INTO alerta (texto_aviso, fk_metrica, fk_tipo_alerta, fk_situacao_alerta) values ('Risco alto. Uso acima do esperado.', %d, %d, %d)", metrica.getId_metrica(),
                             tipo1.getId_tipo_alerta(), situacao2.getId_situacao_alerta()));
-                } else if (d.processador.getUso() >= 10.0) {
+                } else if (d.processador.getUso() >= 50.0) {
+                    sendToSlack("Maquina com id " + result.getId_maquina() + " localizada no setor " + result.getSetor() + " está com uso de CPU acima de 50% (Risco moderado)");
                     con.update(String.format("INSERT INTO alerta (texto_aviso, fk_metrica, fk_tipo_alerta, fk_situacao_alerta) values ('Risco moderado. Uso um pouco acima do esperado.', %d, %d, %d)", metrica.getId_metrica(),
                             tipo1.getId_tipo_alerta(), situacao1.getId_situacao_alerta()));
                 } else {
@@ -340,8 +348,9 @@ public class TelaLogin extends javax.swing.JFrame {
 
 
                 if (d.processador.getUso() < 2.0) {
+                    sendToSlack("Maquina com id " + result.getId_maquina() + " localizada no setor" + result.getSetor() +  " está sendo bloqueada por ociosidade (Ocioso)");
                     con.update(String.format("INSERT INTO alerta (texto_aviso, fk_metrica, fk_tipo_alerta, fk_situacao_alerta) values ('Máquina ociosa.', %d, %d, %d)", metrica.getId_metrica(),
-                            situacao.getId_situacao_alerta(), tipo.getId_tipo_alerta()));
+                            tipo.getId_tipo_alerta(),situacao.getId_situacao_alerta()));
                     ProcessBuilder Alertar = new ProcessBuilder("/bin/bash", "-c", "notify-send ALERTA 'Tela está sendo bloqueada por inatividade'");
                     ProcessBuilder bloquearTela;
                     if (sistema.getSistemaOperacional().equalsIgnoreCase("Windows")) {
